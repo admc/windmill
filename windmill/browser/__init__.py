@@ -31,21 +31,21 @@ windmill.browser_registry = {}
 
 def get_firefox_controller():
     """Get the firefox browser object"""
-    from windmill.dep import mozrunner
-    global_settings = mozrunner.global_settings
-    from windmill.dep import simplesettings
+    #from windmill.dep import mozrunner
+    #global_settings = mozrunner.global_settings
+    #from windmill.dep import simplesettings
+    import mozrunner
+    #mozrunner_settings = simplesettings.initialize_settings(global_settings, mozrunner,
+                    #local_env_variable=mozrunner.settings_env)
     
-    mozrunner_settings = simplesettings.initialize_settings(global_settings, mozrunner,     
-                                                  local_env_variable=mozrunner.settings_env)
-    
-    for key, value in mozrunner.settings.items():
-        if not windmill.settings.has_key(key):
-            windmill.settings[key] = value
+    #for key, value in mozrunner.settings.items():
+    #    if not windmill.settings.has_key(key):
+    #        windmill.settings[key] = value
     
     test_url = windmill.get_test_url(windmill.settings['TEST_URL'])  
     
-    if windmill.settings['INSTALL_FIREBUG']:
-        windmill.settings['MOZILLA_PLUGINS'] = [os.path.join(os.path.dirname(__file__), os.path.pardir, 'xpi', 'firebug-1.5.0.xpi.xpi')]
+    #if windmill.settings['INSTALL_FIREBUG']:
+    #    windmill.settings['MOZILLA_PLUGINS'] = [os.path.join(os.path.dirname(__file__), os.path.pardir, 'xpi', 'firebug-1.5.0.xpi.xpi')]
     
     prop_hash = {
                 'extensions.chromebug.openalways' : True,
@@ -105,28 +105,34 @@ def get_firefox_controller():
         "browser.rights.3.shown": True,
     }
     
-    if windmill.has_ssl:
-         prop_hash["network.proxy.ssl"] = '127.0.0.1'
-         prop_hash["network.proxy.ssl_port"] = windmill.settings['SERVER_HTTP_PORT']
+    profile = mozrunner.FirefoxProfile()
+    profile.set_preferences(prop_hash)
+
+    ff = mozrunner.FirefoxRunner()
+    ff.profile = profile
+
+    #if windmill.has_ssl:
+    #     prop_hash["network.proxy.ssl"] = '127.0.0.1'
+    #     prop_hash["network.proxy.ssl_port"] = windmill.settings['SERVER_HTTP_PORT']
        
-    windmill.settings['MOZILLA_PREFERENCES'].update(prop_hash)
+    #windmill.settings['MOZILLA_PREFERENCES'].update(prop_hash)
         
-    windmill.settings['MOZILLA_CMD_ARGS'] = [test_url]
+    #windmill.settings['MOZILLA_CMD_ARGS'] = [test_url]
     
-    controller = mozrunner.get_moz_from_settings(copy.copy(windmill.settings))
+    #controller = mozrunner.get_moz_from_settings(copy.copy(windmill.settings))
 
     # Override cert8.db with one from windmill which has windmill certificate
     # in it, that way self-signed certificate warning is suppressed.
-    cert8 = resource_string(__name__, 'cert8.db')
-    if sys.platform not in ('win32', 'cygwin',):
-        f = open(os.path.join(controller.profile, 'cert8.db'), 'w')        
-    else:
-        f = open(os.path.join(controller.profile, 'cert8.db'), 'wb')
+    #cert8 = resource_string(__name__, 'cert8.db')
+    #if sys.platform not in ('win32', 'cygwin',):
+    #    f = open(os.path.join(controller.profile, 'cert8.db'), 'w'
+    #else:
+    #    f = open(os.path.join(controller.profile, 'cert8.db'), 'wb')
         
-    f.write(cert8)
-    f.close()    
-    windmill.settings['MOZILLA_PROFILE'] = mozrunner.settings['MOZILLA_PROFILE']
-    return controller
+    #f.write(cert8)
+    #f.close()
+    #windmill.settings['MOZILLA_PROFILE'] = mozrunner.settings['MOZILLA_PROFILE']
+    return ff
     
 def get_ie_controller():
     """Get the IE browser object"""

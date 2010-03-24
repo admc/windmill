@@ -200,12 +200,12 @@ def teardown(shell_objects):
             controller.stop()
             del(controller)
         
-        if windmill.settings['START_FIREFOX'] and windmill.settings['MOZILLA_CREATE_NEW_PROFILE']:
-            shutil.rmtree(windmill.settings['MOZILLA_PROFILE'])
+        #if windmill.settings['START_FIREFOX'] and windmill.settings['MOZILLA_CREATE_NEW_PROFILE']:
+            #shutil.rmtree(windmill.settings['MOZILLA_PROFILE'])
         
-        for directory in windmill.teardown_directories:
-            if os.path.isdir(directory):
-                shutil.rmtree(directory)
+        #for directory in windmill.teardown_directories:
+        #    if os.path.isdir(directory):
+        #        shutil.rmtree(directory)
 
         # while shell_objects['httpd_thread'].isAlive():
         #     try:
@@ -220,7 +220,7 @@ def teardown(shell_objects):
         #             shell_objects['httpd'].socket.shutdown(socket.SHUT_RDWR)
         #             shell_objects['httpd'].socket.close()
         #         except: pass
-        
+        print dir(shell_objects['httpd'].__module__)
         shell_objects['httpd'].stop()
         #shell_objects['httpd_thread'].join()
         
